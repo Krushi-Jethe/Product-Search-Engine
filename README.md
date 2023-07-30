@@ -3,6 +3,6 @@ An Image search engine which searches for images from a database. Takes either t
 
 Working on the description, will be updated once it is ready.
 
-Further improvements will also be added using InstructBLIP/any other similar model and add audio search feature.
+Further improvements will also be added using InstructBLIP/any other similar model for image descriptions + reinforcement learning to improve results and add audio search feature.
 
 Database -- https://huggingface.co/datasets/KrushiJethe/fashion_data
