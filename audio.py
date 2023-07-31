@@ -30,7 +30,7 @@ def audio_to_text():
         
         except sr.RequestError as e:
 
-            return f"Could not request results from Google Web Speech API; {e}"
+            return "Google Web Speech API could not understand the audio."
 
 # if __name__ == "__main__":
 #     audio_to_text()
