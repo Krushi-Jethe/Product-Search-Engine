@@ -24,6 +24,12 @@
         </form>
     </div>
 
+    <div class="audio-search">
+        <form action="{{ url_for('audio_search')}}" method="post">
+            <button type="submit" class="btn btn-primary btn-block btn-large">Audio Search</button>
+        </form>
+    </div>
+
     {{ prediction_text }}
     
     <div class="image-results">
