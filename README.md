@@ -3,9 +3,9 @@ An Image search engine which searches for images from a database. Takes either t
 
 For the text based search, we have used BERT tokenizer to tokenize the words. Cosine similarity between input text and 'productDisplayname' is used to fetch relevant images.
 
-In case of visual search where the user uploads an image, 
---First the uploaded image is passed through ViLT model with pre-defined text queries(classes present in the dataset for e.g. Backpacks, Belts, Deodarants etc.) 
---This ViLT model scores the image for all the 31 classes/the text queries. 
+In case of visual search where the user uploads an image, <br>
+--First the uploaded image is passed through ViLT model with pre-defined text queries(classes present in the dataset for e.g. Backpacks, Belts, Deodarants etc.) <br>
+--This ViLT model scores the image for all the 31 classes/the text queries. <br>
 --If the score is >4 then the input image is passed through ViT to extract embeddings and KNN is performed to retrieve the nearest neighbours of this image.
 
 In audio based search , the audio is first converted to text and then text based search is performed.
