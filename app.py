@@ -58,6 +58,31 @@ def visual_search():
                 data_url = f"data:image/jpeg;base64,{img_str}"
                 data_urls.append(data_url)
             return render_template('index.html', data_urls = data_urls)
+
+
+@app.route('/audio_search',methods=['POST'])
+def audio_search():
+    
+    inp_text = audio_to_text()
+    if inp_text=="Google Web Speech API could not understand the audio.":
+            return render_template('index.html', prediction_text = inp_text)
+        
+    prediction_text = Text_obj.run(input_text=inp_text)
+    
+    if prediction_text == 'Sorry, we could not find what you are looking for!':
+        
+            return render_template('index.html', prediction_text = prediction_text)
+    else:
+        
+            # Convert the list of PIL images to a list of data URLs
+            data_urls = []
+            for encoding in prediction_text:
+                buffered = io.BytesIO()
+                encoding.save(buffered, format="JPEG")
+                img_str = base64.b64encode(buffered.getvalue()).decode()
+                data_url = f"data:image/jpeg;base64,{img_str}"
+                data_urls.append(data_url)
+            return render_template('index.html', data_urls = data_urls)
            
 
 
