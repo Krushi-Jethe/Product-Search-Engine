@@ -1,8 +1,3 @@
-"""
-@authors: Krushi Jethe, Mitali Sahu, Sachin Bagoriya
-
-"""
-
 from flask import Flask, request, render_template
 from text_search import Text_search 
 from visual_search import enhanced_Visual_search
