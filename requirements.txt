@@ -1,0 +1,12 @@
+Flask
+Pillow
+SpeechRecognition
+PyAudio
+pandas
+scikit-learn
+opencv-python
+transformers
+datasets
+sentence-transformers
+numpy
+
