@@ -17,5 +17,5 @@ Created a docker image for the app.
 
 Further improvements will also be added using InstructBLIP/any other similar model for image descriptions + reinforcement learning to improve results. And also increase our database by adding the user uploaded images.
 
-Database -- https://huggingface.co/datasets/KrushiJethe/fashion_data
+Database -- https://huggingface.co/datasets/KrushiJethe/fashion_data <br>
 Original dataset -- https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset
