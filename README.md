@@ -10,9 +10,12 @@ In case of visual search where the user uploads an image, <br>
 
 In audio based search , the audio is first converted to text and then text based search is performed.
 
+Created a docker image for the app.
+
 
 ![Image Search engine](https://github.com/Krushi-Jethe/Image-Search-Engine/assets/137395922/11ac020c-cb13-48f9-a267-d064b5e9a3f7)
 
 Further improvements will also be added using InstructBLIP/any other similar model for image descriptions + reinforcement learning to improve results. And also increase our database by adding the user uploaded images.
 
 Database -- https://huggingface.co/datasets/KrushiJethe/fashion_data
+Original dataset -- https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset
