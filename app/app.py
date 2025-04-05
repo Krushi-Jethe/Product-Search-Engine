@@ -1,9 +1,11 @@
+import io
+import base64
+from PIL import Image
 from flask import Flask, request, render_template
 from text_search import Text_search 
 from visual_search import enhanced_Visual_search
-from PIL import Image
-import io
-import base64
+
+
 
 app = Flask(__name__)
 
