@@ -1,7 +1,14 @@
 """
-Docstring
+class: ProductSearchEngine
+
+Performs product search based on text, audio, or image input.
+- Semantic search using text input.
+- Audio-based search via speech-to-text conversion.
+- Visual search using image input and multi-modal models.
 """
 
+from typing import Tuple, Union
+from PIL import Image
 import numpy as np
 import speech_recognition as sr
 from sklearn.metrics.pairwise import cosine_similarity
@@ -21,7 +28,25 @@ distinct_products = set(dataset["articleType"])
 
 class ProductSearchEngine:
     """
-    Docstring
+    --------------------------
+    Attributes:
+    --------------------------
+    1. data - Dataframe consisting of images, product_category, product_description
+    2. knn - KNN fit on image embeddings
+    3. text_encoder - to encode text and generate embeddings
+    4. vit_processor - to process image before passing to vit_model
+    5. vit_model - to generate embeddings of images.
+    6. vilt_processor - to process image before passing to vilt_model
+    7. vilt_model - to classify input image for classes present in dataset
+
+    --------------------------
+    Methods:
+    --------------------------
+    1. text_search - performs text based search for products
+    2. audio_search - performs audio based search for products
+    3. visual_search - performs image based search for products
+    4. _audio_to_text - records audio from microphone and converts
+                        to text
     """
 
     def __init__(self):
@@ -33,15 +58,16 @@ class ProductSearchEngine:
         self.vilt_processor = vilt_processor
         self.vilt_model = vilt_model
 
-    def text_search(self, inp_text: str):
+    def text_search(self, inp_text: str) -> Union[list, str]:
         """
-        Docstring
+        Performs semantic search by computing cosine similarity between
+        the input text and product descriptions in the dataset.
 
         Args:
-            inp_text (str): _description_
+            inp_text (str): User input text for performing the search.
 
         Returns:
-            _type_: _description_
+            Union[list, str]: list of similar images if present or a message.
         """
 
         word_embedding = self.text_encoder.encode(inp_text.lower())
@@ -69,12 +95,13 @@ class ProductSearchEngine:
         similar_products = filtered_df.iloc[indices]
         return [similar_products.iloc[i]["image"] for i in range(12)]
 
-    def audio_search(self):
+    def audio_search(self) -> Union[list, str]:
         """
-        Docstring
+        Listens to audio input using microphone, converts it to text and
+        then performs text search.
 
         Returns:
-            _type_: _description_
+            Union[list, str]: list of similar images if present or a message.
         """
 
         inp_audio, flag = ProductSearchEngine._audio_to_text()
@@ -83,15 +110,16 @@ class ProductSearchEngine:
         products = self.text_search(inp_audio)
         return products
 
-    def visual_search(self, inp_img: np.ndarray):
+    def visual_search(self, inp_img: Image.Image) -> Union[list, str]:
         """
-        Docstring
+        Checks if image class is present in the dataset using Vision-Language model
+        for classification and then fetches similar images.
 
         Args:
-            inp_img (np.ndarray): _description_
+            inp_img (PIL.Image.Image): User input image for performing the search.
 
         Returns:
-            _type_: _description_
+            Union[list, str]: list of similar images if present or a message.
         """
 
         inp_img.to(device)
@@ -116,9 +144,13 @@ class ProductSearchEngine:
         return "Sorry, we could not find what you are looking for!"
 
     @staticmethod
-    def _audio_to_text():
+    def _audio_to_text() -> Tuple[str, str]:
         """
-        Docstring
+        Uses speech_recognition to record audio from
+        device microphone and convert it to text.
+
+        Returns:
+            Tuple[str, str]: recorded audio, status (successful or unsuccessful)
         """
 
         recognizer = sr.Recognizer()

@@ -1,11 +1,12 @@
 # pylint: disable=import-error
 
 """
-Docstring
+Flask app to run product search engine.
 """
 
 import io
 import base64
+from typing import List
 from PIL import Image
 from flask import Flask, request, render_template
 from src.product_search_engine import ProductSearchEngine
@@ -17,21 +18,21 @@ search_engine = ProductSearchEngine()
 @app.route("/")
 def home():
     """
-    Docstring
+    Displays home page.
 
     Returns:
-        _type_: _description_
+        str: Rendered HTML of the home page.
     """
     return render_template("index.html")
 
 
 @app.route("/text_search", methods=["POST"])
-def text_search():
+def text_search() -> str:
     """
-    Docstring
+    Handles the text-based product search request.
 
     Returns:
-        _type_: _description_
+        str: Rendered HTML of the results page.
     """
 
     inp_text = str(request.form["input_text"])
@@ -45,12 +46,12 @@ def text_search():
 
 
 @app.route("/visual_search", methods=["POST"])
-def visual_search():
+def visual_search() -> str:
     """
-    Docstring
+    Handles the image-based product search request.
 
     Returns:
-        _type_: _description_
+        str: Rendered HTML of the results page.
     """
 
     inp_img = request.files["image_file"]
@@ -67,12 +68,12 @@ def visual_search():
 
 
 @app.route("/audio_search", methods=["POST"])
-def audio_search():
+def audio_search() -> str:
     """
-    Docstring
+    Handles the audio-based product search request.
 
     Returns:
-        _type_: _description_
+        str: Rendered HTML of the results page.
     """
 
     search_results = search_engine.audio_search()
@@ -84,15 +85,15 @@ def audio_search():
     return render_template("index.html", data_urls=data_urls)
 
 
-def gen_data_urls(search_results):
+def gen_data_urls(search_results: List[Image.Image]) -> List[str]:
     """
-    Convert the list of PIL images to a list of data URLs
+    Convert a list of PIL Image objects to a list of base64-encoded data URLs.
 
     Args:
-        search_results (_type_): _description_
+        search_results (List[Image.Image]): A list of PIL Image objects representing search results.
 
     Returns:
-        _type_: _description_
+        List[str]: A list of base64-encoded image data URLs to be rendered in HTML.
     """
 
     data_urls = []
