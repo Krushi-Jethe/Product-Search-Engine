@@ -5,7 +5,7 @@ Docstring
 import numpy as np
 import speech_recognition as sr
 from sklearn.metrics.pairwise import cosine_similarity
-from data_and_models import (
+from .data_and_models import (
     device,
     dataset,
     knn,
@@ -77,7 +77,9 @@ class ProductSearchEngine:
             _type_: _description_
         """
 
-        inp_audio = ProductSearchEngine._audio_to_text()
+        inp_audio, flag = ProductSearchEngine._audio_to_text()
+        if flag != "success":
+            return inp_audio
         products = self.text_search(inp_audio)
         return products
 
@@ -128,13 +130,19 @@ class ProductSearchEngine:
                 recognizer.adjust_for_ambient_noise(source, duration=1)
                 audio = recognizer.listen(source, timeout=5)
                 text = recognizer.recognize_google(audio)
-                return text
+                return text, "success"
 
             except sr.WaitTimeoutError:
-                return "Listening timed out while waiting for phrase to start."
+                return (
+                    "Listening timed out while waiting for phrase to start.",
+                    "unsuccessful",
+                )
 
             except sr.UnknownValueError:
-                return "Could not understand the audio."
+                return "Could not understand the audio.", "unsuccessful"
 
             except sr.RequestError as e:
-                return f"Could not request results from Google Speech Recognition service; {e}"
+                return (
+                    f"Could not request results from Google Speech Recognition service; {e}",
+                    "unsuccessful",
+                )
