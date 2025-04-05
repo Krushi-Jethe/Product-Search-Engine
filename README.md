@@ -1,4 +1,5 @@
 # Image-Search-Engine
+# This repo is still a WIP. Restructuring code. Latest code will be available in dev branch.
 An Image search engine which searches for images from a database. Takes either text, image or audio as input to give relevant output.
 
 For the text based search, we have used BERT tokenizer to tokenize the words. Cosine similarity between input text and 'productDisplayname' is used to fetch relevant images.
