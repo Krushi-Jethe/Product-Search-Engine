@@ -8,6 +8,7 @@ Performs product search based on text, audio, or image input.
 """
 
 from typing import Tuple, Union
+import torch
 from PIL import Image
 import numpy as np
 import speech_recognition as sr
@@ -58,6 +59,7 @@ class ProductSearchEngine:
         self.vilt_processor = vilt_processor
         self.vilt_model = vilt_model
 
+    @torch.no_grad
     def text_search(self, inp_text: str) -> Union[list, str]:
         """
         Performs semantic search by computing cosine similarity between
@@ -72,27 +74,22 @@ class ProductSearchEngine:
 
         word_embedding = self.text_encoder.encode(inp_text.lower())
 
-        search_class = []
-        for product in distinct_products:
-            category = product.split()
-            input_split = inp_text.split()
-            for inputs in input_split:
-                if inputs.lower() in category:
-                    search_class.append(category)
-        search_class = [" ".join(sublist) for sublist in search_class]
-
-        if len(search_class) == 0:
-            return "Sorry, we could not find what you are looking for!"
-
-        filtered_df = self.data[self.data["articleType"].isin(search_class)]
         embeddings = self.text_encoder.encode(
-            filtered_df["productDisplayName"].tolist()
+            (self.data["productDisplayName"] + " " + self.data["articleType"]).tolist()
         )
+
         cosine_similarities = cosine_similarity(
             word_embedding.reshape(1, -1), embeddings
         )
+
         indices = np.argsort(cosine_similarities[0])[::-1][:12]  # n=12
-        similar_products = filtered_df.iloc[indices]
+        threshold = 0.4
+        filtered_indices = [i for i in indices if cosine_similarities[i] > threshold]
+
+        if not filtered_indices:
+            return "Sorry, we could not find what you are looking for!"
+        
+        similar_products = self.data.iloc[indices]
         return [similar_products.iloc[i]["image"] for i in range(12)]
 
     def audio_search(self) -> Union[list, str]:
@@ -110,6 +107,7 @@ class ProductSearchEngine:
         products = self.text_search(inp_audio)
         return products
 
+    @torch.no_grad
     def visual_search(self, inp_img: Image.Image) -> Union[list, str]:
         """
         Checks if image class is present in the dataset using Vision-Language model
@@ -122,24 +120,28 @@ class ProductSearchEngine:
             Union[list, str]: list of similar images if present or a message.
         """
 
+        inp_img = torch.from_numpy(np.array(inp_img)).float()
         inp_img.to(device)
 
         scores = {}
         for product in distinct_products:
             encoding = self.vilt_processor(inp_img, product, return_tensors="pt")
+            encoding.to(device)
             outputs = self.vilt_model(**encoding)
             scores[product] = outputs.logits[0, :].item()
+            print(product, scores[product])
 
         is_present = any(score > 4 for score in scores.values())
 
         if is_present:
             inputs = self.vit_processor(inp_img, return_tensors="pt")
+            inputs.to(device)
             output = self.vit_model(**inputs)
-            output_embedding = output.logits.detach().numpy()
+            output_embedding = output.logits.detach().cpu().numpy()
             _, indices = self.knn.kneighbors(output_embedding)
             indices = list(indices[0])
 
-            return [self.data["train"]["image"][i] for i in indices]
+            return [self.data["image"][i] for i in indices]
 
         return "Sorry, we could not find what you are looking for!"
 
@@ -160,7 +162,7 @@ class ProductSearchEngine:
 
             try:
                 recognizer.adjust_for_ambient_noise(source, duration=1)
-                audio = recognizer.listen(source, timeout=5)
+                audio = recognizer.listen(source, timeout=10)
                 text = recognizer.recognize_google(audio)
                 return text, "success"
 
