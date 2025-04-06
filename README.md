@@ -1,5 +1,5 @@
 # Product Search Engine
-**WIP**
+**README.md will be updated soon.**
 
 `docker pull krushijethe/kj-product-search-engine:v1.0`
 
