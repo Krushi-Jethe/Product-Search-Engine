@@ -1,13 +1,21 @@
-FROM python:3.9.12
+FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 
-RUN apt-get update && apt-get install -y portaudio19-dev
+LABEL author="Jethe Krushi, krushi.jethe@gmail.com"
+LABEL version="1.0"
+LABEL description="Product Search Engine app with GPU support"
 
-WORKDIR /docker-app
+WORKDIR /search-engine
 
-COPY requirements.txt requirements.txt
+RUN apt-get update && \
+    apt-get install -y gcc portaudio19-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "app.py"]
+EXPOSE 5000
+
+CMD ["python", "app/app.py"]
