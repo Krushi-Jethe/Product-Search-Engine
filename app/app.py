@@ -1,15 +1,23 @@
-# pylint: disable=import-error
+# pylint: disable=import-error, wrong-import-position
 
 """
 Flask app to run product search engine.
 """
 
-import io
 import base64
+import io
+import os
+import sys
 from typing import List
+
 from PIL import Image
 from flask import Flask, request, render_template
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.product_search_engine import ProductSearchEngine
+
+
 
 app = Flask(__name__)
 search_engine = ProductSearchEngine()
@@ -39,7 +47,7 @@ def text_search() -> str:
     search_results = search_engine.text_search(inp_text=inp_text)
 
     if isinstance(search_results, str):
-        return render_template("index.html", prediction_text=search_results)
+        return render_template("index.html", message=search_results)
 
     data_urls = gen_data_urls(search_results=search_results)
     return render_template("index.html", data_urls=data_urls)
@@ -55,12 +63,12 @@ def visual_search() -> str:
     """
 
     inp_img = request.files["image_file"]
-    inp_img = Image.open(io.BytesIO(inp_img.read()))
+    inp_img = Image.open(io.BytesIO(inp_img.read())).convert("RGB")
 
     search_results = search_engine.visual_search(inp_img=inp_img)
 
     if isinstance(search_results, str):
-        return render_template("index.html", prediction_text=search_results)
+        return render_template("index.html", message=search_results)
 
     # Convert the list of PIL images to a list of data URLs
     data_urls = gen_data_urls(search_results=search_results)
@@ -79,7 +87,7 @@ def audio_search() -> str:
     search_results = search_engine.audio_search()
 
     if isinstance(search_results, str):
-        return render_template("index.html", prediction_text=search_results)
+        return render_template("index.html", message=search_results)
 
     data_urls = gen_data_urls(search_results=search_results)
     return render_template("index.html", data_urls=data_urls)
@@ -108,4 +116,4 @@ def gen_data_urls(search_results: List[Image.Image]) -> List[str]:
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
