@@ -84,7 +84,7 @@ class ProductSearchEngine:
 
         indices = np.argsort(cosine_similarities[0])[::-1][:12]  # n=12
         threshold = 0.4
-        filtered_indices = [i for i in indices if cosine_similarities[i] > threshold]
+        filtered_indices = [i for i in indices if cosine_similarities[0][i] > threshold]
 
         if not filtered_indices:
             return "Sorry, we could not find what you are looking for!"
